@@ -30,10 +30,10 @@ CREATE TABLE COV03_LOCATION(
 
 
 CREATE TABLE COV04_FAMILY(
-	citizen_principal bigint unsigned not null,
-	citizen_red bigint unsigned not null,
+	citizen_principal_id bigint unsigned not null,
+	citizen_red_id bigint unsigned not null,
 	
-	PRIMARY KEY (citizen_principal, citizen_red)
+	PRIMARY KEY (citizen_principal_id, citizen_red_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE COV05_HEALTH_STATUS(
