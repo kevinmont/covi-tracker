@@ -2,4 +2,4 @@ CREATE TABLE COV00_PING(
 	id serial,
 	
 	PRIMARY KEY (id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
