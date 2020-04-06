@@ -1,7 +1,10 @@
 package com.choza.pequenines.vscovid.services;
 
+import javax.validation.Valid;
+
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
+import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
 
 public interface UserService {
@@ -9,5 +12,7 @@ public interface UserService {
 	AuthResVO doLogin(AuthReqVO credentials);
 
 	Long signUp(SignUpReqVO user);
+
+	Boolean setupLocation(Long userId, @Valid LocationReqVO location);
 
 }

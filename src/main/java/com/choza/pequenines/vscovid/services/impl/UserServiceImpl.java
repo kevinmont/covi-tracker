@@ -3,6 +3,8 @@ package com.choza.pequenines.vscovid.services.impl;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
@@ -11,13 +13,16 @@ import org.springframework.web.server.ResponseStatusException;
 import com.choza.pequenines.vscovid.repositories.CitizenRepository;
 import com.choza.pequenines.vscovid.repositories.HealthHistoryRepository;
 import com.choza.pequenines.vscovid.repositories.HealthStatusRepository;
+import com.choza.pequenines.vscovid.repositories.LocationRepository;
 import com.choza.pequenines.vscovid.repositories.UserRepository;
 import com.choza.pequenines.vscovid.repositories.entities.CitizenEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.HealthHistoryEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.HealthStatusEntitie;
+import com.choza.pequenines.vscovid.repositories.entities.LocationEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.UserEntitie;
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
+import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
 import com.choza.pequenines.vscovid.security.SecurityConstant;
 import com.choza.pequenines.vscovid.services.UserService;
@@ -34,15 +39,18 @@ public class UserServiceImpl implements UserService {
 	private CitizenRepository citizenRepository;
 	private HealthStatusRepository healthStatusRepository;
 	private HealthHistoryRepository healthHistoryRepository;
+	private LocationRepository locationRepository;
 	
 	public UserServiceImpl(UserRepository userRepository,
 						   CitizenRepository citizenRepository,
 						   HealthStatusRepository healthStatusRepository,
-						   HealthHistoryRepository healthHistoryRepository) {
+						   HealthHistoryRepository healthHistoryRepository,
+						   LocationRepository locationRepository) {
 		this.userRepository = userRepository;
 		this.citizenRepository = citizenRepository;
 		this.healthStatusRepository =  healthStatusRepository;
 		this.healthHistoryRepository = healthHistoryRepository;
+		this.locationRepository = locationRepository;
 	}
 
 	@Override
@@ -114,6 +122,51 @@ public class UserServiceImpl implements UserService {
 		log.info("signUp(): ending method");
 		return userEntitie.getId();
 	}
+	
+	@Override
+	public Boolean setupLocation(Long userId, @Valid LocationReqVO location) {
+		log.info("setupLocation(): starting method");
+		log.info(" - [userId: {}, location: {} ]", userId, location);
+		
+		log.info(" - calling to userRepository[findById]");
+		Optional<UserEntitie> userOptional = userRepository.findById(userId);
+		if (!userOptional.isPresent()) {
+			log.error(" - Usuario not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existe");
+		}
+		UserEntitie userEntitie = userOptional.get();
+		
+		log.info(" - calling to citizenRepository[findByUser]");
+		Optional<CitizenEntitie> citizenOptional = citizenRepository.findByUser(userEntitie);
+		if (!citizenOptional.isPresent()) {
+			log.error(" - Ciudadano not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ciudadano no existe");
+		}
+		
+		CitizenEntitie citizenEntitie = citizenOptional.get();
+		LocationEntitie userLocation = null;
+		
+		if (citizenEntitie.getLocation() != null) {
+			userLocation = citizenEntitie.getLocation();
+		} else {
+			userLocation = new LocationEntitie();
+		}
+		
+		userLocation.setLatitude(location.getLat());
+		userLocation.setLongitude(location.getLng());
+		userLocation.setAddress(location.getAddress());
+		userLocation.setDescription(location.getDescription());
+		log.info(" - setting up location...");
+		locationRepository.save(userLocation);
+		
+		log.info(" - setting up citizen...");
+		citizenEntitie.setLocation(userLocation);
+		citizenRepository.save(citizenEntitie);
+		
+		log.info("setupLocation(): ending method");
+		return true;
+	}
+
 	
 	private String generateToken(Long userId, String username) {
 			String token = Jwts.builder().setId("softtekJWT")

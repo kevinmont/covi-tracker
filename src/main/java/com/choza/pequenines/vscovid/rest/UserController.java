@@ -5,12 +5,14 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
 import com.choza.pequenines.vscovid.rest.vos.CreatedResVO;
+import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
 import com.choza.pequenines.vscovid.services.UserService;
 
@@ -47,5 +49,17 @@ public class UserController {
 		
 		log.info("signUp(): ending method");
 		return ResponseEntity.ok(createdResVO);
+	}
+	
+	@PostMapping(value = "/location")
+	public ResponseEntity<?> updateUserLocation(@RequestAttribute("userId") Long userId,
+			@RequestBody @Valid LocationReqVO location) {
+		log.info("updateUserLocation(): starting method");
+		
+		log.info(" - calling to userService[setupLocation]");
+		userService.setupLocation(userId, location);
+		
+		log.info("updateUserLocation(): ending method");
+		return ResponseEntity.noContent().build();
 	}
 }
