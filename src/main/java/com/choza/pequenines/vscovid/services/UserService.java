@@ -1,7 +1,7 @@
 package com.choza.pequenines.vscovid.services;
 
-import javax.validation.Valid;
-
+import com.choza.pequenines.vscovid.repositories.entities.CitizenEntitie;
+import com.choza.pequenines.vscovid.rest.vos.AddFamilyMemberReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
@@ -13,6 +13,10 @@ public interface UserService {
 
 	Long signUp(SignUpReqVO user);
 
-	Boolean setupLocation(Long userId, @Valid LocationReqVO location);
+	Boolean setupLocation(Long userId, LocationReqVO location);
+
+	Long addNewMemberFamily(CitizenEntitie citizen, AddFamilyMemberReqVO member);
+	
+	CitizenEntitie getCitizen(Long userId);
 
 }
