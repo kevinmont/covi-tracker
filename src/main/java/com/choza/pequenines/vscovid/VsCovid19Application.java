@@ -21,6 +21,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.choza.pequenines.vscovid.security.JWTAuthorizationFilter;
+
 @SpringBootConfiguration
 @EnableAutoConfiguration
 @EnableJpaRepositories
@@ -45,6 +47,7 @@ public class VsCovid19Application {
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().antMatchers(HttpMethod.POST, "/login", "/user").permitAll()
 					.antMatchers(HttpMethod.GET, "/ping").permitAll().anyRequest().authenticated().and()
+					.addFilter(new JWTAuthorizationFilter(authenticationManager()))
 					.addFilter(corsFilter).csrf()
 					.disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		}
