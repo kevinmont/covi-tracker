@@ -1,8 +1,12 @@
 package com.choza.pequenines.vscovid.services.impl;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
@@ -23,7 +27,9 @@ import com.choza.pequenines.vscovid.repositories.entities.UserEntitie;
 import com.choza.pequenines.vscovid.rest.vos.AddFamilyMemberReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
+import com.choza.pequenines.vscovid.rest.vos.FamilyMemberResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
+import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
 import com.choza.pequenines.vscovid.security.SecurityConstant;
 import com.choza.pequenines.vscovid.services.UserService;
@@ -233,6 +239,37 @@ public class UserServiceImpl implements UserService {
 		
 		log.info("getCitizen(): ending method");
 		return citizenOptional.get();
+	}
+	
+	@Override
+	public PaginateResultResVO<FamilyMemberResVO> getFamilyMembers(CitizenEntitie citizen, Pageable pageable) {
+		log.info("getFamilyMembers(): starting method");
+		
+		log.info(" - [citizen: {}]", citizen);
+		PaginateResultResVO<FamilyMemberResVO> paginateResultResVO = new PaginateResultResVO<FamilyMemberResVO>() ;
+		
+		log.info(" - familyRepository[findAllByPrincipal]");
+		Page<FamilyEntitie> family = familyRepository.findAllByPrincipal(citizen, pageable);
+		paginateResultResVO.setTotalPages(family.getTotalPages());
+		paginateResultResVO.setPage(family.getPageable().getPageNumber());
+		
+		List<FamilyMemberResVO> familyMemberResVOs = family.stream()
+		.map($0 -> {
+			FamilyMemberResVO familyMemberResVO = new FamilyMemberResVO();
+			familyMemberResVO.setId($0.getMember().getId());
+			familyMemberResVO.setName($0.getMember().getName());
+			familyMemberResVO.setGender($0.getMember().getGender());
+			familyMemberResVO.setAge($0.getMember().getAge());
+			HealthHistoryEntitie healthHistoryEntitie = healthHistoryRepository.findFirstByCitizenOrderByDateCreationDesc($0.getMember());
+			familyMemberResVO.setHealthStatus(healthHistoryEntitie.getStatus().getStatus());
+			return familyMemberResVO;
+		}).collect(Collectors.toList());
+		
+		log.info(" - familyMemberResVOs[size: {}]", familyMemberResVOs.size());
+		paginateResultResVO.setResult(familyMemberResVOs);
+		
+		log.info("getFamilyMembers(): ending method");
+		return paginateResultResVO;
 	}
 	
 	private String generateToken(Long userId, String username) {
