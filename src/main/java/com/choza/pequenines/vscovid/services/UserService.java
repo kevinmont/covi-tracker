@@ -8,6 +8,7 @@ import com.choza.pequenines.vscovid.rest.vos.AddNewHistoryLocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
 import com.choza.pequenines.vscovid.rest.vos.FamilyMemberResVO;
+import com.choza.pequenines.vscovid.rest.vos.LocationHistoryResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
@@ -31,5 +32,7 @@ public interface UserService {
 			Long memberId);
 
 	Long addNewHistoryLocation(CitizenEntitie citizen, AddNewHistoryLocationReqVO location);
+
+	PaginateResultResVO<LocationHistoryResVO> getHistoryLocations(CitizenEntitie citizen, Pageable pageable);
 
 }

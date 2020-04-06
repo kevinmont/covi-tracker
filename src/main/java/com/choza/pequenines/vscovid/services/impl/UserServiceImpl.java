@@ -33,6 +33,7 @@ import com.choza.pequenines.vscovid.rest.vos.AddNewHistoryLocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
 import com.choza.pequenines.vscovid.rest.vos.FamilyMemberResVO;
+import com.choza.pequenines.vscovid.rest.vos.LocationHistoryResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
@@ -351,6 +352,35 @@ public class UserServiceImpl implements UserService {
 		log.info("addNewHistoryLocation(): ending method");
 		return locationEntitie.getId();
 	}
+	
+	@Override
+	public PaginateResultResVO<LocationHistoryResVO> getHistoryLocations(CitizenEntitie citizen, Pageable pageable) {
+		log.info("getHistoryLocations(): starting method");
+		log.debug(" - [citizen: {}]", citizen);
+		
+		PaginateResultResVO<LocationHistoryResVO> paginateResultResVO = new PaginateResultResVO<LocationHistoryResVO>();
+		
+		log.info(" - historyLocationRepository[findAllByCitizen]");
+		Page<HistoryLocationEntitie> historyLocationPage = historyLocationRepository.findAllByCitizen(citizen, pageable);
+		paginateResultResVO.setPage(historyLocationPage.getPageable().getPageNumber());
+		paginateResultResVO.setTotalPages(historyLocationPage.getTotalPages());
+		
+		List<LocationHistoryResVO> locationHistoryResVOs = historyLocationPage.stream()
+			.map($0 -> {
+				LocationHistoryResVO locationHistoryResVO = new LocationHistoryResVO();
+				locationHistoryResVO.setLat($0.getLocation().getLatitude());
+				locationHistoryResVO.setLng($0.getLocation().getLongitude());
+				locationHistoryResVO.setDate($0.getDateCreation());
+				
+				return locationHistoryResVO;
+			}).collect(Collectors.toList());
+		log.info(" - locationHistoryResVOs[size: {}]", locationHistoryResVOs.size());
+		paginateResultResVO.setResult(locationHistoryResVOs);
+		
+		log.info("getHistoryLocations(): ending method");
+		return paginateResultResVO;
+	}
+
 
 	private String generateToken(Long userId, String username) {
 			String token = Jwts.builder().setId("softtekJWT")
