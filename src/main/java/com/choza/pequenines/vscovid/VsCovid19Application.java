@@ -43,7 +43,7 @@ public class VsCovid19Application {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers(HttpMethod.POST, "/login").permitAll()
+			http.authorizeRequests().antMatchers(HttpMethod.POST, "/login", "/user").permitAll()
 					.antMatchers(HttpMethod.GET, "/ping").permitAll().anyRequest().authenticated().and()
 					.addFilter(corsFilter).csrf()
 					.disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
+import com.choza.pequenines.vscovid.rest.vos.CreatedResVO;
+import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
 import com.choza.pequenines.vscovid.services.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,5 +32,20 @@ public class UserController {
 		
 		log.info("doLogin(): ending method");
 		return ResponseEntity.ok(authResVO);
+	}
+	
+	@PostMapping(value = "/user") 
+	public ResponseEntity<?> signUp(@RequestBody @Valid SignUpReqVO user) {
+		log.info("signUp(): starting method");
+		
+		log.info(" - calling to userService[signUp]");
+		Long userId = userService.signUp(user);
+				
+		CreatedResVO createdResVO = new CreatedResVO();
+		log.info(" - [createdResVO: {}]", createdResVO);
+		createdResVO.setId(userId);
+		
+		log.info("signUp(): ending method");
+		return ResponseEntity.ok(createdResVO);
 	}
 }
