@@ -10,6 +10,7 @@ import com.choza.pequenines.vscovid.rest.vos.FamilyMemberResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
+import com.choza.pequenines.vscovid.rest.vos.UpdateFamilyMemberHealthStatusReqVO;
 
 public interface UserService {
 	
@@ -24,5 +25,7 @@ public interface UserService {
 	CitizenEntitie getCitizen(Long userId);
 
 	PaginateResultResVO<FamilyMemberResVO> getFamilyMembers(CitizenEntitie citizen, Pageable pageable);
+
+	Boolean updateHealthStatusOfMember(UpdateFamilyMemberHealthStatusReqVO memberHealthStatus, CitizenEntitie citizen, Long memberId);
 
 }

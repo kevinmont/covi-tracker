@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,7 @@ import com.choza.pequenines.vscovid.rest.vos.FamilyMemberResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
 import com.choza.pequenines.vscovid.rest.vos.SignUpReqVO;
+import com.choza.pequenines.vscovid.rest.vos.UpdateFamilyMemberHealthStatusReqVO;
 import com.choza.pequenines.vscovid.security.SecurityConstant;
 import com.choza.pequenines.vscovid.services.UserService;
 
@@ -40,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Transactional
 public class UserServiceImpl implements UserService {
 	
 	private UserRepository userRepository;
@@ -271,6 +275,46 @@ public class UserServiceImpl implements UserService {
 		log.info("getFamilyMembers(): ending method");
 		return paginateResultResVO;
 	}
+	
+	@Override
+	public Boolean updateHealthStatusOfMember(UpdateFamilyMemberHealthStatusReqVO memberHealthStatus, CitizenEntitie citizen, Long memberId) {
+		log.info("updateHealthStatusOfMember(): starting method");
+		log.debug(" - [citizen: {}, memberId: {}]", memberId, memberId);
+		log.info(" - [memberId: {}]", memberId);
+		
+		log.info(" - citizenRepository[findById]");
+		Optional<CitizenEntitie> citizenOptional = citizenRepository.findById(memberId);
+		if (!citizenOptional.isPresent()) {
+			log.error(" - Member as citizen not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ciudadano no existe");
+		}
+		CitizenEntitie citizenMember = citizenOptional.get();
+		
+		log.info(" - familyRepository[findByPrincipalAndMember]");
+		Optional<FamilyEntitie> familyMemberOptional = familyRepository.findByPrincipalAndMember(citizen, citizenMember);
+		if (!familyMemberOptional.isPresent()) {
+			log.error(" - member is not in family");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ciudadano no es familiar");
+		}
+		
+		log.info(" - healthStatusRepository[findByStatus]");
+		Optional<HealthStatusEntitie> healthStatusOptional = healthStatusRepository.findByStatus(memberHealthStatus.getHealthStatus());
+		if (!healthStatusOptional.isPresent()) {
+			log.error(" - Health status not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estado invalido");
+		}
+		HealthStatusEntitie healthStatusEntitie = healthStatusOptional.get();
+		
+		HealthHistoryEntitie healthHistoryEntitie = new HealthHistoryEntitie();
+		healthHistoryEntitie.setCitizen(citizenMember);
+		healthHistoryEntitie.setStatus(healthStatusEntitie);
+		healthHistoryEntitie.setDateCreation(new Date());
+		healthHistoryRepository.save(healthHistoryEntitie);
+		
+		log.info("updateHealthStatusOfMember(): ending method");
+		return true;
+	}
+
 	
 	private String generateToken(Long userId, String username) {
 			String token = Jwts.builder().setId("softtekJWT")

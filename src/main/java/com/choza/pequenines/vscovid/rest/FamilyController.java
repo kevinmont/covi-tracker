@@ -8,6 +8,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +20,7 @@ import com.choza.pequenines.vscovid.rest.vos.AddFamilyMemberReqVO;
 import com.choza.pequenines.vscovid.rest.vos.CreatedResVO;
 import com.choza.pequenines.vscovid.rest.vos.FamilyMemberResVO;
 import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
+import com.choza.pequenines.vscovid.rest.vos.UpdateFamilyMemberHealthStatusReqVO;
 import com.choza.pequenines.vscovid.services.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,4 +65,21 @@ public class FamilyController {
 		log.info("getFamilyMembers(): ending method");
 		return ResponseEntity.ok(paginateResultVO);
 	}
+	
+	@PatchMapping(value = "/family/{memberId}")
+	public ResponseEntity<?> updateHealthStatus(@RequestBody @Valid UpdateFamilyMemberHealthStatusReqVO memberHealthStatus,
+												@RequestAttribute("userId") Long userId,
+												@PathVariable("memberId") Long memberId) {
+		log.info("updateHealthStatus(): starting method");
+		
+		log.info(" - calling to userService[getCitizen]");
+		CitizenEntitie citizen = userService.getCitizen(userId);
+		
+		log.info(" - calling to userService[updateHealthStatusOfMember]");
+		userService.updateHealthStatusOfMember(memberHealthStatus, citizen, memberId);
+		
+		log.info("updateHealthStatus(): ending method");
+		return ResponseEntity.noContent().build();
+	}
+	
 }
