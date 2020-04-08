@@ -7,7 +7,7 @@ import com.choza.pequenines.vscovid.repositories.entities.CitizenEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.HealthHistoryEntitie;
 
 @Repository
-public interface HealthHistoryRepository extends CrudRepository<HealthHistoryEntitie, Long> {
+public interface HealthHistoryRepository extends CrudRepository<HealthHistoryEntitie, Long>, HealthHistoryRepositoryComplemento {
 
 	HealthHistoryEntitie findFirstByCitizenOrderByDateCreationDesc(CitizenEntitie citizen);
 }
