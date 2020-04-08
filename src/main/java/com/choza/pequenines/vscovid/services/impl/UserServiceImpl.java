@@ -403,7 +403,14 @@ public class UserServiceImpl implements UserService {
 			Pageable pageable) {
 		log.info("getNearestCitizens(): starting method");
 		
+		GeometryFactory geometryFactory = new GeometryFactory();
+		Point point = geometryFactory.createPoint(
+				new Coordinate(lat, lng));
 		
+		Page<LocationEntitie> locationPage = locationRepository.findWithin(point, radio, pageable);
+		locationPage.stream().forEach($0 -> {
+			System.out.println($0);
+		});
 		
 		log.info("getNearestCitizens(): ending method");
 		return null;

@@ -68,9 +68,10 @@ public class LocationController {
 	@GetMapping(value = "/find-nearby")
 	public ResponseEntity<?> getNearestCitizens(@RequestParam("lat") Double lat,
 												@RequestParam("lng") Double lng,
-												@RequestParam(name = "radio", defaultValue = "100", required = false) Double radio,
+												@RequestParam(name = "dis", defaultValue = "100", required = false) Double radio,
 												@PageableDefault(direction = Sort.Direction.ASC, size = 20) Pageable pageable) {
-		log.info("getNearestCitizens(): starting method");
+		log.warn("getNearestCitizens(): starting method");
+		log.warn(" - not implemented yet!");
 		
 		log.info(" - calling to userService[getNearestCitizens]");
 		PaginateResultResVO<GetNearestCitizenResVO> paginateResultResVO = userService.getNearestCitizens(lat, lng, radio, pageable);
