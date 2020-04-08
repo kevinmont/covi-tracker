@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,7 @@ import com.choza.pequenines.vscovid.rest.vos.AddNewHistoryLocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthReqVO;
 import com.choza.pequenines.vscovid.rest.vos.AuthResVO;
 import com.choza.pequenines.vscovid.rest.vos.FamilyMemberResVO;
+import com.choza.pequenines.vscovid.rest.vos.GetNearestCitizenResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationHistoryResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
@@ -122,6 +126,15 @@ public class UserServiceImpl implements UserService {
 		UserEntitie userEntitie = new UserEntitie();
 		userEntitie.setUsername(user.getEmail());
 		userRepository.save(userEntitie);
+		
+		log.info(" - setting up location...");
+		LocationEntitie userLocation = new LocationEntitie();
+		GeometryFactory geometryFactory = new GeometryFactory();
+		Point point = geometryFactory.createPoint(
+				new Coordinate(user.getLocation().getLat(), user.getLocation().getLng()));
+		userLocation.setCordinate(point);
+		userLocation.setAddress(user.getLocation().getAddress());
+		locationRepository.save(userLocation);
 
 		Date dateCreation = new Date();
 		log.info(" - setting up citizen...");
@@ -130,8 +143,8 @@ public class UserServiceImpl implements UserService {
 		citizenEntitie.setGender(user.getGender());
 		citizenEntitie.setName(user.getName());
 		citizenEntitie.setUser(userEntitie);
+		citizenEntitie.setLocation(userLocation);
 		citizenEntitie.setDateCreated(dateCreation);
-
 		citizenRepository.save(citizenEntitie);
 
 		log.info(" - setting up health history...");
@@ -174,10 +187,11 @@ public class UserServiceImpl implements UserService {
 			userLocation = new LocationEntitie();
 		}
 
-		userLocation.setLatitude(location.getLat());
-		userLocation.setLongitude(location.getLng());
+		GeometryFactory geometryFactory = new GeometryFactory();
+		Point point = geometryFactory.createPoint(
+				new Coordinate(location.getLat(), location.getLng()));
+		userLocation.setCordinate(point);
 		userLocation.setAddress(location.getAddress());
-		userLocation.setDescription(location.getDescription());
 		log.info(" - setting up location...");
 		locationRepository.save(userLocation);
 
@@ -335,8 +349,10 @@ public class UserServiceImpl implements UserService {
 		
 		log.info(" - setting up new location...");
 		LocationEntitie locationEntitie = new LocationEntitie();
-		locationEntitie.setLatitude(location.getLat());
-		locationEntitie.setLongitude(location.getLng());
+		GeometryFactory geometryFactory = new GeometryFactory();
+		Point point = geometryFactory.createPoint(
+				new Coordinate(location.getLat(), location.getLng()));
+		locationEntitie.setCordinate(point);
 		locationRepository.save(locationEntitie);
 		
 		log.info(" - setting up location history...");
@@ -368,8 +384,9 @@ public class UserServiceImpl implements UserService {
 		List<LocationHistoryResVO> locationHistoryResVOs = historyLocationPage.stream()
 			.map($0 -> {
 				LocationHistoryResVO locationHistoryResVO = new LocationHistoryResVO();
-				locationHistoryResVO.setLat($0.getLocation().getLatitude());
-				locationHistoryResVO.setLng($0.getLocation().getLongitude());
+				Point point = (Point) $0.getLocation().getCordinate();
+				locationHistoryResVO.setLat(point.getX());
+				locationHistoryResVO.setLng(point.getY());
 				locationHistoryResVO.setDate($0.getDateCreation());
 				
 				return locationHistoryResVO;
@@ -380,7 +397,17 @@ public class UserServiceImpl implements UserService {
 		log.info("getHistoryLocations(): ending method");
 		return paginateResultResVO;
 	}
-
+	
+	@Override
+	public PaginateResultResVO<GetNearestCitizenResVO> getNearestCitizens(Double lat, Double lng, Double radio,
+			Pageable pageable) {
+		log.info("getNearestCitizens(): starting method");
+		
+		
+		
+		log.info("getNearestCitizens(): ending method");
+		return null;
+	}
 
 	private String generateToken(Long userId, String username) {
 			String token = Jwts.builder().setId("softtekJWT")

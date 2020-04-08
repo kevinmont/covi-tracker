@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.choza.pequenines.vscovid.repositories.entities.CitizenEntitie;
 import com.choza.pequenines.vscovid.rest.vos.AddNewHistoryLocationReqVO;
 import com.choza.pequenines.vscovid.rest.vos.CreatedResVO;
+import com.choza.pequenines.vscovid.rest.vos.GetNearestCitizenResVO;
 import com.choza.pequenines.vscovid.rest.vos.LocationHistoryResVO;
 import com.choza.pequenines.vscovid.rest.vos.PaginateResultResVO;
 import com.choza.pequenines.vscovid.services.UserService;
@@ -60,6 +62,20 @@ public class LocationController {
 		PaginateResultResVO<LocationHistoryResVO> paginateResultResVO = userService.getHistoryLocations(citizen, pageable);
 		
 		log.info("getHistoryLocation(): ending method");
+		return ResponseEntity.ok(paginateResultResVO);
+	}
+	
+	@GetMapping(value = "/find-nearby")
+	public ResponseEntity<?> getNearestCitizens(@RequestParam("lat") Double lat,
+												@RequestParam("lng") Double lng,
+												@RequestParam(name = "radio", defaultValue = "100", required = false) Double radio,
+												@PageableDefault(direction = Sort.Direction.ASC, size = 20) Pageable pageable) {
+		log.info("getNearestCitizens(): starting method");
+		
+		log.info(" - calling to userService[getNearestCitizens]");
+		PaginateResultResVO<GetNearestCitizenResVO> paginateResultResVO = userService.getNearestCitizens(lat, lng, radio, pageable);
+		
+		log.info("getNearestCitizens(): eniding method");
 		return ResponseEntity.ok(paginateResultResVO);
 	}
 	

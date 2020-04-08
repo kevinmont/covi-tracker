@@ -3,7 +3,9 @@ package com.choza.pequenines.vscovid.rest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +39,7 @@ public class UserController {
 	}
 	
 	@PostMapping(value = "/user") 
-	public ResponseEntity<?> signUp(@RequestBody @Valid SignUpReqVO user) {
+	public ResponseEntity<CreatedResVO> signUp(@RequestBody @Valid SignUpReqVO user) {
 		log.info("signUp(): starting method");
 		
 		log.info(" - calling to userService[signUp]");
@@ -48,10 +50,10 @@ public class UserController {
 		createdResVO.setId(userId);
 		
 		log.info("signUp(): ending method");
-		return ResponseEntity.ok(createdResVO);
+		return new ResponseEntity<CreatedResVO>(createdResVO, HttpStatus.CREATED);
 	}
 	
-	@PostMapping(value = "/location")
+	@PatchMapping(value = "/location")
 	public ResponseEntity<?> updateUserLocation(@RequestAttribute("userId") Long userId,
 			@RequestBody @Valid LocationReqVO location) {
 		log.info("updateUserLocation(): starting method");

@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.locationtech.jts.geom.Geometry;
+
 import lombok.ToString;
 
 @Entity
@@ -26,17 +28,17 @@ public class LocationEntitie implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "longitude")
-	private Double longitude;
-
-	@Column(name = "latitude")
-	private Double latitude;
+	@Column(name = "coordinates", columnDefinition = "Geometry", nullable = true)
+	private Geometry cordinate;
 
 	@Column(name = "address")
 	private String address;
-
-	@Column(name = "description")
-	private String description;
+	
+	@Column(name = "city")
+	private String city;
+	
+	@Column(name = "zip_code")
+	private Integer zipCode;
 
 	public Long getId() {
 		return id;
@@ -46,20 +48,12 @@ public class LocationEntitie implements Serializable {
 		this.id = id;
 	}
 
-	public Double getLongitude() {
-		return longitude;
+	public Geometry getCordinate() {
+		return cordinate;
 	}
 
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-	public Double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
+	public void setCordinate(Geometry cordinate) {
+		this.cordinate = cordinate;
 	}
 
 	public String getAddress() {
@@ -70,12 +64,20 @@ public class LocationEntitie implements Serializable {
 		this.address = address;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getCity() {
+		return city;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setCity(String city) {
+		this.city = city;
 	}
 
+	public Integer getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(Integer zipCode) {
+		this.zipCode = zipCode;
+	}
+	
 }
