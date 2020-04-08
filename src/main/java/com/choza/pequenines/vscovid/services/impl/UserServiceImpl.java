@@ -122,6 +122,14 @@ public class UserServiceImpl implements UserService {
 		UserEntitie userEntitie = new UserEntitie();
 		userEntitie.setUsername(user.getEmail());
 		userRepository.save(userEntitie);
+		
+		log.info(" - setting up location...");
+		LocationEntitie userLocation = new LocationEntitie();
+		userLocation.setLatitude(user.getLocation().getLat());
+		userLocation.setLongitude(user.getLocation().getLng());
+		userLocation.setAddress(user.getLocation().getAddress());
+		userLocation.setDescription(user.getLocation().getDescription());
+		locationRepository.save(userLocation);
 
 		Date dateCreation = new Date();
 		log.info(" - setting up citizen...");
@@ -130,8 +138,8 @@ public class UserServiceImpl implements UserService {
 		citizenEntitie.setGender(user.getGender());
 		citizenEntitie.setName(user.getName());
 		citizenEntitie.setUser(userEntitie);
+		citizenEntitie.setLocation(userLocation);
 		citizenEntitie.setDateCreated(dateCreation);
-
 		citizenRepository.save(citizenEntitie);
 
 		log.info(" - setting up health history...");

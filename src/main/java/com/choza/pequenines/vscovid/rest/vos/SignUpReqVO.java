@@ -2,6 +2,7 @@ package com.choza.pequenines.vscovid.rest.vos;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -33,6 +34,10 @@ public class SignUpReqVO implements Serializable {
 	
 	@NotNull
 	private HealthStatusEnum healthStatus;
+	
+	@Valid
+	@NotNull
+	private LocationReqVO location;
 
 	public String getEmail() {
 		return email;
@@ -72,5 +77,13 @@ public class SignUpReqVO implements Serializable {
 
 	public void setHealthStatus(HealthStatusEnum healthStatus) {
 		this.healthStatus = healthStatus;
+	}
+
+	public LocationReqVO getLocation() {
+		return location;
+	}
+
+	public void setLocation(LocationReqVO location) {
+		this.location = location;
 	}
 }
