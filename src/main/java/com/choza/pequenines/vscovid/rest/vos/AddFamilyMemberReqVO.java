@@ -2,11 +2,11 @@ package com.choza.pequenines.vscovid.rest.vos;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.choza.pequenines.vscovid.repositories.entities.GenderEnum;
-import com.choza.pequenines.vscovid.repositories.entities.HealthStatusEnum;
 
 import lombok.ToString;
 
@@ -29,7 +29,8 @@ public class AddFamilyMemberReqVO implements Serializable {
 	private GenderEnum gender;
 	
 	@NotNull
-	private HealthStatusEnum healthStatus;
+	@Valid
+	private EditHealthStatusEnumUserReqVO healthStatus;
 
 	public String getName() {
 		return name;
@@ -55,11 +56,11 @@ public class AddFamilyMemberReqVO implements Serializable {
 		this.gender = sexo;
 	}
 
-	public HealthStatusEnum getHealthStatus() {
+	public EditHealthStatusEnumUserReqVO getHealthStatus() {
 		return healthStatus;
 	}
 
-	public void setHealthStatus(HealthStatusEnum healthStatus) {
+	public void setHealthStatus(EditHealthStatusEnumUserReqVO healthStatus) {
 		this.healthStatus = healthStatus;
 	}
 }

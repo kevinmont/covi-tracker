@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
-import com.choza.pequenines.vscovid.repositories.entities.HealthStatusEnum;
-
 import lombok.ToString;
 
 @ToString
@@ -17,13 +15,13 @@ public class UpdateFamilyMemberHealthStatusReqVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@NotNull
-	private HealthStatusEnum healthStatus;
+	private EditHealthStatusEnumUserReqVO healthStatus;
 
-	public HealthStatusEnum getHealthStatus() {
+	public EditHealthStatusEnumUserReqVO getHealthStatus() {
 		return healthStatus;
 	}
 
-	public void setHealthStatus(HealthStatusEnum healthStatus) {
+	public void setHealthStatus(EditHealthStatusEnumUserReqVO healthStatus) {
 		this.healthStatus = healthStatus;
 	}
 	

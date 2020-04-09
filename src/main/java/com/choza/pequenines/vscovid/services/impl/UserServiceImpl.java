@@ -28,6 +28,7 @@ import com.choza.pequenines.vscovid.repositories.entities.CitizenEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.FamilyEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.HealthHistoryEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.HealthStatusEntitie;
+import com.choza.pequenines.vscovid.repositories.entities.HealthStatusEnum;
 import com.choza.pequenines.vscovid.repositories.entities.HistoryLocationEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.LocationEntitie;
 import com.choza.pequenines.vscovid.repositories.entities.UserEntitie;
@@ -113,8 +114,10 @@ public class UserServiceImpl implements UserService {
 		}
 
 		log.info(" - healthStatusRepository[findByStatus]");
+		HealthStatusEnum healthStatusEnum = HealthStatusEnum.valueOf(user.getHealthStatus().name());
+		
 		Optional<HealthStatusEntitie> healthStatusOptional = healthStatusRepository
-				.findByStatus(user.getHealthStatus());
+				.findByStatus(healthStatusEnum);
 		if (!healthStatusOptional.isPresent()) {
 			log.error(" - Health status not found");
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Estado invalido");
@@ -209,8 +212,10 @@ public class UserServiceImpl implements UserService {
 		log.debug(" - [citizen: {}, member: {}]", citizen, member);
 
 		log.info(" - healthStatusRepository[findByStatus]");
+		HealthStatusEnum healthStatusEnum = HealthStatusEnum.valueOf(member.getHealthStatus().name());
+		
 		Optional<HealthStatusEntitie> healthStatusOptional = healthStatusRepository
-				.findByStatus(member.getHealthStatus());
+				.findByStatus(healthStatusEnum);
 		if (!healthStatusOptional.isPresent()) {
 			log.error(" - Health status not found");
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Estado invalido");
@@ -323,8 +328,9 @@ public class UserServiceImpl implements UserService {
 		}
 
 		log.info(" - healthStatusRepository[findByStatus]");
+		HealthStatusEnum healthStatusEnum = HealthStatusEnum.valueOf(memberHealthStatus.getHealthStatus().name());
 		Optional<HealthStatusEntitie> healthStatusOptional = healthStatusRepository
-				.findByStatus(memberHealthStatus.getHealthStatus());
+				.findByStatus(healthStatusEnum);
 		if (!healthStatusOptional.isPresent()) {
 			log.error(" - Health status not found");
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estado invalido");

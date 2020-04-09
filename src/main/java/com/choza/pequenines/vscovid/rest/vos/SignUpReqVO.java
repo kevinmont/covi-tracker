@@ -7,7 +7,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import com.choza.pequenines.vscovid.repositories.entities.GenderEnum;
-import com.choza.pequenines.vscovid.repositories.entities.HealthStatusEnum;
 
 import lombok.ToString;
 
@@ -33,7 +32,7 @@ public class SignUpReqVO implements Serializable {
 	private GenderEnum gender;
 	
 	@NotNull
-	private HealthStatusEnum healthStatus;
+	private EditHealthStatusEnumUserReqVO healthStatus;
 	
 	@Valid
 	@NotNull
@@ -71,11 +70,11 @@ public class SignUpReqVO implements Serializable {
 		this.gender = gender;
 	}
 
-	public HealthStatusEnum getHealthStatus() {
+	public EditHealthStatusEnumUserReqVO getHealthStatus() {
 		return healthStatus;
 	}
 
-	public void setHealthStatus(HealthStatusEnum healthStatus) {
+	public void setHealthStatus(EditHealthStatusEnumUserReqVO healthStatus) {
 		this.healthStatus = healthStatus;
 	}
 
